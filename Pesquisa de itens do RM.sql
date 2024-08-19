@@ -1,0 +1,34 @@
+select 
+tmov.CODCOLIGADA,
+tmov.CODFILIAL,
+tmov.CODTMV,
+tmov.NUMEROMOV,
+tmov.IDMOV,
+CONVERT (VARCHAR, tmov.DATAEMISSAO, 103) AS DATAEMISSAO,
+fcfo.CGCCFO AS 'CNPJ/CPF_FORNECEDOR',
+fcfo.NOMEFANTASIA AS FORNECEDOR,
+tprd.NOMEFANTASIA AS PRODUTO, 
+CONVERT (NUMERIC, TITMMOV.QUANTIDADEORIGINAL) AS QUANTIDADEORIGINAL,
+--PRECOUNITARIO
+CONVERT (float, PRECOUNITARIO) AS PRECOUNITARIO,
+tmov.USUARIOCRIACAO
+
+from titmmov
+
+inner join tmov on titmmov.idmov=tmov.idmov and titmmov.CODCOLIGADA=tmov.codcoligada
+inner join fcfo on tmov.CODCFO = FCFO.CODCFO and tmov.CODCOLCFO = fcfo.CODCOLIGADA
+inner join TPRD on TITMMOV.IDPRD = tprd.IDPRD and titmmov.CODCOLIGADA = tprd.CODCOLIGADA
+
+where TPRD.NOMEFANTASIA LIKE @NOME_FANTASIA
+and tmov.DATAEMISSAO>= @DATAEMISSAO
+and fcfo.CGCCFO like @CNPJ /*cnpj do forncedor*/
+--and tmov.CODTMV IN ('1.1.62','1.1.34','1.1.35')
+--and tmov.CODTMV IN ('1.1.34',)
+--and tmov.CODTMV IN ('1.1.35')
+and tmov.CODTMV IN ('1.1.62')
+--order by tmov.DATAEMISSAO desc
+order by tmov.idmov asc
+
+
+SELECT * 
+ FROM TMOV WHERE IDMOV = 2197663

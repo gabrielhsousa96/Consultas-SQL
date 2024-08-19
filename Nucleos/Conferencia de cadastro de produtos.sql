@@ -1,0 +1,31 @@
+SELECT
+pfunc.SALARIO,
+CONVERT(DECIMAL(10, 2), (PFUNC.SALARIO / PFUNC.JORNADA)) AS SALARIO_POR_HORA,
+PFUNC.JORNADA,
+    ROUND(
+        CASE 
+            WHEN codrecebimento = 'h' THEN salario/220
+            WHEN codrecebimento = 'm' THEN salario
+            ELSE NULL 
+        END,
+        2
+    ) AS DESCRICAO
+FROM pfunc (NOLOCK)
+where /*
+chapa=:CHAPA
+and codcoligada=:$COLIGADA*/
+PFUNC.CHAPA = '00023903' AND
+CODCOLIGADA = 1
+/* SELECT * FROM PFUNC WHERE NOME LIKE '%HIAGO%FERREIRA%'*/
+
+
+
+
+SELECT NOME, * FROM
+PFUNC 
+WHERE CODFUNCAO = 007
+ORDER BY DATAADMISSAO DESC
+
+SELECT * 
+FROM PFUNCAO 
+WHERE NOME LIKE '%VIG%'

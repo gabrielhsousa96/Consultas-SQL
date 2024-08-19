@@ -1,0 +1,22 @@
+SELECT * FROM pfunc where nome like '%hiago%ferreira%'
+
+
+select * from PPESSOA where nome like '%hiago%ferreira%'
+
+select * from PFPERFF
+WHERE
+--CHAPA = '00021985'
+chapa = '00024817'
+AND PFPERFF.ANOCOMP = 2023
+AND PFPERFF.MESCOMP = 11
+
+SELECT * FROM PFFINANC
+WHERE
+--CHAPA = '00021985'
+chapa = '00024817'
+AND PFFINANC.ANOCOMP = 2023
+AND PFFINANC.MESCOMP = 11
+
+
+SELECT * FROM PEVENTO
+
