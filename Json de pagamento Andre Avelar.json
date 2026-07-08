@@ -1,0 +1,109 @@
+{
+  "requisicao": {
+    "titulos": [
+      {
+        "valorNominal": 7289.72,
+        "dtVencimento": "2024-10-22",
+        "dataVencimento": "Tue Oct 22 00:00:00 BRT 2024",
+        "cpfCnpjPagador": "06362606663",
+        "nossoNumero": "14000000000349569"
+      }
+    ],
+    "tipoMovimentacao": 2,
+    "beneficiario": {
+      "codigoBeneficiario": "987680",
+      "cnpjBeneficiario": "19403252006392",
+      "codigoBanco": "104"
+    }
+  },
+  "cod resposta": 200,
+  "resposta": {
+    "retornos": [
+      {
+        "mensagemRetorno": "Movimentos incluídos com sucesso",
+        "titulos": [
+          {
+            "situacao": "Registrado",
+            "codigo": 248434678,
+            "pagador": {
+              "inscricao": "06362606663",
+              "nome": "ANDRE ALVES AVELAR"
+            },
+            "usoEmpresa": "0011000000000000000349569",
+            "valor": 7289.72,
+            "existeMovimentacaoAberta": false,
+            "situacaoTitulo": "REGISTRADO",
+            "urlBoleto": "https://portal.totalbank.com.br/boleto/download?boleto-gateway=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNDg0MzQ2NzgiLCJiIjoyNDg0MzQ2NzgsImlzcyI6ImxvY2FsaG9zdDo4MDgwIiwiaWF0IjoxNzI4MzMwODE2LCJleHAiOjMzMjg1MjM5NjE2fQ.aW8YjTC92PRo9cZX-eN2WJ0jn3h7olzWJpGSNbnUbgw",
+            "seuNumero": "00110349569    ",
+            "cpfCnpjSacado": "06362606663",
+            "dataVencimento": "2024-10-22",
+            "nossoNumero": "14000000000349569",
+            "COBTitulo": {
+              "msg": {
+                "mensagensInstrucoes": [],
+                "concateMsgs": "",
+                "todasMensagens": [],
+                "mensages": [null, null, null, null, null, null, null, null]
+              },
+              "temDesconto3": false,
+              "temDesconto2": false,
+              "temDesconto1": false,
+              "usoEmpresaCedente": "0011000000000000000349569",
+              "liquidado": false,
+              "propertiesJson": {},
+              "emAberto": true,
+              "incluido": false,
+              "baixado": false,
+              "cpfCnpjSacado": "06362606663",
+              "pagadorEnderecoCidadeUF": "",
+              "emailEnviado": false,
+              "selected": false,
+              "aceite": "N",
+              "codigo": 248434678,
+              "situacaoEmail": false,
+              "nome": "ANDRE ALVES AVELAR",
+              "dataVencimento": "Tue Oct 22 00:00:00 BRT 2024",
+              "cpfCnpjAvalistaFormatado": "",
+              "identificacaoEmissoBoqueto": 2,
+              "situacaoBoletoMail": "N/A",
+              "infMovimentacaoRejeitado": "Movimentos rejeitados : <br/>.",
+              "descricaoJuros": "",
+              "valorNominal": 7289.72,
+              "dominio": "Gestão",
+              "rejeitado": false,
+              "descricaoTituloVencido": "Titulo vencido em 22/10/2024. Valor: R$7289.72",
+              "emitido": false,
+              "seuNumero": "00110349569    ",
+              "pagadorEnderecoComplemento": "",
+              "codigoCedente": 1497607,
+              "cpfCnpjFormatado": "063.626.066-63",
+              "registrado": "\u0000",
+              "impressaoLocal": true,
+              "movimentacaoRejeitado": false,
+              "situacaoTitulo": "Registrado",
+              "situacaoEmissao": "\u0000",
+              "descricaoMulta": "",
+              "mostrarsegundaVia": true,
+              "URLDownloadBoleto": "https://portal.totalbank.com.br/boleto/download?boleto-gateway=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNDg0MzQ2NzgiLCJiIjoyNDg0MzQ2NzgsImlzcyI6ImxvY2FsaG9zdDo4MDgwIiwiaWF0IjoxNzI4MzMwODE2LCJleHAiOjMzMjg1MjM5NjE2fQ.aW8YjTC92PRo9cZX-eN2WJ0jn3h7olzWJpGSNbnUbgw",
+              "existeMovimentacaoEnviavel": false,
+              "movimentacaoEmAberto": false,
+              "situacaoComMotivoRejeicao": "Registrado",
+              "nossoNumero": "14000000000349569",
+              "protestado": false,
+              "pagadorEndereco": "",
+              "tipoPagamento": {
+                "autorizacaoPagParcialDivergente": false,
+                "aceitaPagamentoDiversos": false,
+                "qtdPagPossivel": 1,
+                "descricao": ""
+              },
+              "infMovimentacaoEmAberto": "Movimentos em aberto : <br/>."
+            },
+            "codigoCedente": 1497607
+          }
+        ],
+        "codigoRetorno": 0
+      }
+    ]
+  }
+}
