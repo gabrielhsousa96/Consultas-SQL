@@ -1,0 +1,96 @@
+USE [CORPORE_RESIDENCIAL]
+GO
+/****** Object:  UserDefinedFunction [dbo].[Extenso]    Script Date: 18/10/2024 16:08:50 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+CREATE FUNCTION [dbo].[Extenso](@VALOR DECIMAL(18, 5))
+RETURNS VARCHAR(255)
+AS
+BEGIN
+
+DECLARE
+@STR_EXT VARCHAR(255),
+@FLAG_E INT,
+@GRUPO DECIMAL(10, 2),
+@MOEDA VARCHAR(10),
+@MOEDA_PLURAL VARCHAR(10),
+@FLAG_CENTAVOS DECIMAL(18, 5)
+
+-- Aqui vc podera configurar a descricao da Moeda
+SET @MOEDA = 'Real'
+SET @MOEDA_PLURAL = 'Reais'
+SET @FLAG_CENTAVOS = 1 -- Exibir os centavos [ 0) Nao 1) Sim ]
+
+SET @STR_EXT = ''
+SET @FLAG_E = 0
+SET @GRUPO = 0
+
+IF ((CONVERT(INT, @VALOR) - (CONVERT(INT, @VALOR) % 1)) = 0)
+BEGIN
+SET @STR_EXT = ' Zero'
+END
+ELSE
+BEGIN
+DECLARE @TEMPINT BIGINT
+-- SET @TEMPINT = (.000000001*((CONVERT(BIGINT, @VALOR) % 1000000000000)
+-- - (CONVERT(BIGINT, @VALOR) % 1000000000)))
+-- SELECT @FLAG_E = FLAG_E, @STR_EXT = STR_EXT FROM dbo.TrataGrupoExtenso(
+-- @TEMPINT, ' Bilhão', ' Bilhões', @FLAG_E, @STR_EXT)
+
+SET @TEMPINT = .000001*((CONVERT(INT, @VALOR) % 1000000000)
+- (CONVERT(INT, @VALOR) % 1000000))
+
+SELECT @FLAG_E = FLAG_E, @STR_EXT = STR_EXT
+FROM dbo.TrataGrupoExtenso(
+@TEMPINT, ' Milhão' , ' Milhões', @FLAG_E, @STR_EXT)
+
+SET @TEMPINT = .001*((CONVERT(INT, @VALOR) % 1000000) -
+(CONVERT(INT, @VALOR) % 1000))
+
+SELECT @FLAG_E = FLAG_E, @STR_EXT = STR_EXT
+FROM dbo.TrataGrupoExtenso(
+@TEMPINT, ' Mil' , ' Mil', @FLAG_E, @STR_EXT)
+
+SET @TEMPINT = (CONVERT(INT, @VALOR) % 1000)
+
+SELECT @FLAG_E = FLAG_E, @STR_EXT = STR_EXT
+FROM dbo.TrataGrupoExtenso(
+@TEMPINT, '' , '', @FLAG_E, @STR_EXT)
+END
+
+IF (ROUND(@VALOR, 0) = 1)
+BEGIN
+SET @STR_EXT = @STR_EXT + ' '+RTRIM(@MOEDA)
+END
+ELSE
+BEGIN
+IF (ROUND(@VALOR, -6) <> 0) and
+(ROUND(@VALOR, 0) - ROUND(@VALOR, -6) = 0)
+SET @STR_EXT = @STR_EXT + ' de ' + RTRIM(@moeda_plural)
+ELSE
+SET @STR_EXT = @STR_EXT + ' ' + RTRIM(@moeda_plural)
+END
+
+IF (@FLAG_CENTAVOS = 1)
+BEGIN
+SET @FLAG_E = 1;
+
+DECLARE @TEMPINT2 BIGINT
+-- SET @TEMPINT2 = 100*(@VALOR - ROUND(@VALOR, 0))
+
+set @TEMPINT2 = cast(right(cast(cast(@VALOR as numeric(10,2)) as varchar(15)),2) as BIGINT)
+
+-- Aqui vc podera mudar a descricao dos centavos
+SELECT @FLAG_E = FLAG_E, @STR_EXT = STR_EXT
+FROM dbo.TrataGrupoExtenso(
+@TEMPINT2, ' Centavo' , ' Centavos', @FLAG_E, @STR_EXT)
+END
+
+RETURN(@STR_EXT)
+END
+

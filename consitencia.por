@@ -1,0 +1,92 @@
+FORMULA 0052-M
+
+EXECSQL ('EMCCAMP.0319');
+
+SE RESULTSQL ('EMCCAMP.0319','CODCONTA') = ''
+    
+    ENTAO 'Conta crédito do Fornecedor não Cadastrada'
+
+    SENAO  
+        SE (TABMOV('CODTMV','S') = '1.2.13' OU TABMOV('CODTMV','S') = '1.2.14' OU TABMOV('CODTMV','S') = '1.2.04' OU TABMOV('CODTMV','S') = '1.2.28')
+            ENTAO 
+/*********CRIADO PELO CONSULTOR BRUNO FARIA GAIA CONSULTING EM 08/02/2022***************/
+               Decl CODIGOMODELODOCUMENTO;
+               EXECSQL('GAIA.0000');
+               Setvar(CODIGOMODELODOCUMENTO, RESULTSQL('GAIA.0000','CODIGOMODELODOCUMENTO'));
+               SE CODIGOMODELODOCUMENTO <> '1B' E CODIGOMODELODOCUMENTO <> '01' E CODIGOMODELODOCUMENTO <> '04' /* CODIGO DE MODELO DE NOTA PRECISA SER DIFERENTE DE 01, 04 E 1B */
+        
+        		ENTAO
+        
+        			Decl CHAVEACESSONFE;
+        			Setvar(CHAVEACESSONFE, TABMOV('CHAVEACESSONFE', 'S'));
+        
+        
+        			SE CHAVEACESSONFE = ''  /* SE A CHAVE NÃO TA PREENCHIDA */
+        			ENTAO 'FAVOR PREENCHER O CAMPO CHAVE DE ACESSO DA NFE.'
+        			SENAO
+        				SE TAMSTR(CHAVEACESSONFE) <> 44 /* SE A CHAVE NÃO TEM 44 CARACTERES */
+        				ENTAO 'CHAVE DE ACESSO DA NFE INVÁLIDA. TAMANHO DEVE SER IGUAL A 44 CARACTERES.'
+        				SENAO
+        					EXECSQL('GAIA.0001');
+        					SE RESULTSQL('GAIA.0001','CHAVEACESSOEXISTENTE') = 1  /*SE A CHAVE JA EXISTE */
+        					ENTAO 'CHAVE DE ACESSO DA NFE DUPLICADA. JÁ EXISTE OUTRO MOVIMENTO SALVO COM A CHAVE DE ACESSO INFORMADA.'
+        					SENAO
+        						Decl CNPJCLIFOR;
+        						Setvar(CNPJCLIFOR, 
+        								RETIRACARACTERES
+        								('.',
+        									RETIRACARACTERES
+        									('-',
+        										RETIRACARACTERES
+        										('/',                        
+        											TABCLIFOR('CGCCFO','S', TABMOV('CODCOLCFO', 'I'),TABMOV('CODCFO', 'S'))
+        										)
+        									)
+        								)
+        						);
+        						/* SE PARA CONFERIR O CNPJ */ 
+        						SE SUBSTR(CHAVEACESSONFE, 7, 14) <> CNPJCLIFOR
+        						ENTAO 'CHAVE DE ACESSO DA NFE INVÁLIDA. CNPJ DO EMITENTE '+CNPJCLIFOR+' DIFERENTE DO CNPJ INFORMADO NA CHAVE DE ACESSO '+SUBSTR(CHAVEACESSONFE, 7, 14)+'. '
+        						SENAO
+									/* SE PARA COFERIR SE O CODIGO DO DOCUMENTO DE 2 DIGITOS QUE INICIA A PARTIR DO CARACTERE 21, ESTA IGUAL AO CADASTRADO */
+        							SE SUBSTR(CHAVEACESSONFE, 21, 2) <> CODIGOMODELODOCUMENTO
+        							ENTAO 'CHAVE DE ACESSO DA NFE INVÁLIDA. O CÓDIGO DO MODELO '+RESULTSQL('GAIA.0000','CODIGOMODELODOCUMENTO')+' INFORMADO NO CADASTRO DO TIPO DE DOCUMENTO DO MOVIMENTO É DIFERENTE DO INFORMADO NA CHAVE DE ACESSO DA NFE '+SUBSTR(CHAVEACESSONFE, 21, 2)+'. '
+        							SENAO
+										/* SE PARA CONFERIR SE O NUMERO DE SERIE DE 3 DIGITOS QUE INICIA A PARTIR DO CARACTERE 23, ESTÁ IGUAL AO CADASTRADO */
+        								/*Converte para VAL (valor) para remover os zeros a esquerda da chave de acesso da nfe*/
+        								SE VAL(SUBSTR(CHAVEACESSONFE, 23, 3)) <> VAL(TABMOV('SERIE', 'S'))
+        								ENTAO 'CHAVE DE ACESSO DA NFE INVÁLIDA. A SÉRIE DO MOVIMENTO '+TABMOV('SERIE', 'S')+' É DIFERENTE DA SÉRIE INFORMADA NA CHAVE DE ACESSO DA NFE '+ VAL(SUBSTR(CHAVEACESSONFE, 23, 3))+'. '
+        								SENAO
+											/*SE PARA CONFERIR SE O NUMERO MOV É IGUAL AOS CARACTERES DE 26 A 34 DA NF, E SE ESTÁ IGUAL AO CADASTRADO */ 
+        									/*Converte para VAL (valor) para remover os zeros a esquerda da chave de acesso da nfe*/
+        									SE VAL(SUBSTR(CHAVEACESSONFE, 26, 9)) <> VAL(TABMOV('NUMEROMOV', 'S'))
+        									ENTAO 'CHAVE DE ACESSO DA NFE INVÁLIDA. O Nº DO MOVIMENTO '+ VAL(TABMOV('NUMEROMOV', 'S'))+' É DIFERENTE DO Nº DA NF INFORMADO NA CHAVE DE ACESSO DA NFE '+ VAL(SUBSTR(CHAVEACESSONFE, 26, 9))+'. '
+        									SENAO
+												/* SE PARA VERIFICAR SE OS 2 DIGITOS DO ANO E DO MES SÃO IGUAIS AOS 4 DIGITOS DE ANO E MES DA DATA DE EMISSÃO */
+        										SE CONCAT(SUBSTR(TABMOV('DATAEMISSAO','D'),9,2),SUBSTR(TABMOV('DATAEMISSAO','D'),4,2)) <>  VAL(SUBSTR(CHAVEACESSONFE,3, 4))
+        													ENTAO 'CHAVE DE ACESSO DA NFE INVÁLIDA. O ANO/MÊS '+SUBSTR(TABMOV('DATAEMISSAO','D'),9,2)+'/'+SUBSTR(TABMOV('DATAEMISSAO','D'),4,2)+' DO MOVIMENTO DIFERENTE DO ANO/MES DA CHAVE DE ACESSO ' + SUBSTR(CHAVEACESSONFE,3, 4)
+        													SENAO 1
+        										FIMSE 	
+        									FIMSE                        
+        								FIMSE
+        							FIMSE
+        						FIMSE
+        					FIMSE
+        				FIMSE
+        			FIMSE
+        		SENAO 1
+        		FIMSE
+       SENAO 1
+     FIMSE
+/*********CRIADO PELO CONSULTOR BRUNO FARIA GAIA CONSULTING EM 08/02/2022***************/
+        
+        /*
+        SE (TABMOV('CODTMV','S') = '1.2.13' OU TABMOV('CODTMV','S') = '1.2.14' OU TABMOV('CODTMV','S') = '1.2.04') E  TABMOV('CHAVEACESSONFE','S') = '' E (TABMOV('CODTDO','S') = '55' OU TABMOV('CODTDO','S') ='0033')
+            
+          ENTAO 'A Chave de Acesso deve ser Preenchida'
+    
+          SENAO  1
+    
+        FIMSE
+        */
+FIMSE

@@ -1,0 +1,165 @@
+WITH ATUALIZACAO AS (select 
+PFUNC.CODSINDICATO,
+PFUNC.CODSITUACAO,
+pfunc.CODCATEGORIAESOCIAL,
+PANOTAC.TIPO,
+PANOTAC.DTANOTACAO,
+PANOTAC.DTRESOLUCAO
+from PFUNC
+INNER JOIN PPESSOA ON PPESSOA.CODIGO = PFUNC.CODPESSOA
+INNER JOIN PANOTAC ON PANOTAC.CODPESSOA = PPESSOA.CODIGO)
+where pfunc.codsituacao <> 'd'
+
+--commit
+-begin tran
+INSERT INTO 
+ZMDCONTRIBUICAOSINDICAL (
+    ID,
+    CODCOLIGADA,
+    CHAPA,
+    SINDICATO,
+    DATAENTREGA,
+    DATAVALIDADE,
+    TIPO,
+    OBSERVACOES,
+    RECCREATEDBY,
+    RECCREATEDON,
+    RECMODIFIEDBY,
+    RECMODIFIEDON
+)
+VALUES (
+    2,
+    ATUALIZACAO.CODCOLIGADA,
+    ATUALIZACAO.CHAPA,
+    ATUALIZACAO.CODSINDICATO,
+    ATUALIZACAO.DTANOTACAO,
+    ATUALIZACAO.DTRESOLUCAO,
+    ATUALIZACAO.TIPO,
+    'TESTE',
+    'job',
+    GETDATE(),
+    'job',
+    GETDATE()
+);
+
+select * 
+from GLINKSREL
+WHERE CHILDTABLE = 'PANOTAC'
+
+SELECT 
+    c.name AS ColumnName,
+    c.is_identity AS IsIdentity
+FROM sys.columns c
+JOIN sys.tables t ON c.object_id = t.object_id
+WHERE t.name = 'ZMDCONTRIBUICAOSINDICAL' AND c.name = 'ID';
+
+/*
+METADADOS
+TABELA: CONTRIBUICAOSINDICAL
+DESCRIÇÃO: TABELA PARA VALIDAR ENTREGA DA CARTA DE CONTRIBUIÇÃO SINDIÇÃO E SUA RESPECTIVA VALIDADE.
+
+
+*/
+
+SELECT PFUNC.NOME,* 
+FROM ZMDCONTRIBUICAOSINDICAL AS Z
+INNER JOIN PFUNC ON PFUNC.CODCOLIGADA = Z.CODCOLIGADA AND PFUNC.CHAPA = Z.CHAPA
+
+select nome,* 
+from pfunc
+where nome like '%merces%'
+
+select nome,* 
+from pfunc 
+where codsecao = '0001.0001.02.04.0002'
+
+SELECT * 
+FROM GDINAM 
+WHERE CODIGO = 'INT40'
+
+SELECT * 
+FROM PTPANOTACAO
+
+select * 
+from PSINDIC
+where NOME NOT LIKE '%9%'
+
+select * 
+from gconsist
+where codcoligada = 0 
+and codtabela like '%ano%'
+
+
+
+BEGIN TRAN;
+
+BEGIN TRY
+    WITH ATUALIZACAO AS (
+        SELECT 
+            PFUNC.CODSINDICATO,
+            PFUNC.CODSITUACAO,
+            PFUNC.CODCATEGORIAESOCIAL,
+            PFUNC.CHAPA,
+            PFUNC.CODCOLIGADA AS CODCOLIGADA,
+            (CASE 
+                WHEN PFUNC.CODSITUACAO IN ('C','D','G','I','K','L','M','N','O','P','Q','S','T','U') 
+                THEN 'NÃO' 
+                ELSE 'SIM' 
+            END) AS SITUACAO,
+            PANOTAC.TIPO,
+            PANOTAC.DTANOTACAO,
+            PANOTAC.DTRESOLUCAO
+        FROM PFUNC
+        INNER JOIN PPESSOA ON PPESSOA.CODIGO = PFUNC.CODPESSOA
+        INNER JOIN PANOTAC ON PANOTAC.CODPESSOA = PPESSOA.CODIGO
+		where pfunc.CODSITUACAO <> 'D' 
+		and PANOTAC.DTRESOLUCAO is not null
+		and PANOTAC.DTANOTACAO is not null
+    ),
+    NUMERADOS AS (
+        SELECT 
+            ROW_NUMBER() OVER (ORDER BY CHAPA) + ISNULL((SELECT MAX(ID) FROM ZMDCONTRIBUICAOSINDICAL), 0) AS ID,
+            CODCOLIGADA,
+            CHAPA,
+            CODSINDICATO,
+            DTANOTACAO AS DATAENTREGA,
+            DTRESOLUCAO AS DATAVALIDADE,
+            TIPO
+        FROM ATUALIZACAO
+    )
+    INSERT INTO ZMDCONTRIBUICAOSINDICAL (
+        ID,
+        CODCOLIGADA,
+        CHAPA,
+        SINDICATO,
+        DATAENTREGA,
+        DATAVALIDADE,
+        TIPO,
+        OBSERVACOES,
+        RECCREATEDBY,
+        RECCREATEDON,
+        RECMODIFIEDBY,
+        RECMODIFIEDON
+    )
+    SELECT 
+        ID,
+        CODCOLIGADA,
+        CHAPA,
+        CODSINDICATO,
+        DATAENTREGA,
+        DATAVALIDADE,
+        TIPO,
+        'INSERÇÃO VIA FORMULA VISUAL DE FUNCIONARIOS',
+        'job',
+        GETDATE(),
+        'job',
+        GETDATE()
+    FROM NUMERADOS;
+
+   -- COMMIT;
+    PRINT 'Insert realizado com sucesso!';
+END TRY
+BEGIN CATCH
+    ROLLBACK;
+    PRINT 'Erro ao inserir: ' + ERROR_MESSAGE();
+END CATCH;
